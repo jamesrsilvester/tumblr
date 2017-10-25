@@ -1,3 +1,19 @@
 body {
-  background-color: #FAFAFA;
+  background-color: #F5F2F0;
+}
+
+.video {
+  width: 75%;
+}
+
+.post {
+  background: white;
+  display: inline-block;
+  width: 100%;
+  margin: 10px;
+  padding: 10px;
+}
+
+.audioPlayer {
+  margin-top: 10%;
 }

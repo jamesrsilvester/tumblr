@@ -3,6 +3,7 @@ const baseUrl = 'https://api.tumblr.com/v2';
 const blogEndpoint = '/blog/';
 const tagEndpoint = '/tagged';
 const apiKey = 'qvPkgVRPIjA1uvzj0neyThBYknIaH1R3lqsT2e5xBdfrkxDrvz';
+const favButton = `<div class="favBtn"><img src="./assets/star_empty.png"/></div>`;
 
 $(document).on("ready", function() {
   console.log("scripts linked");
@@ -93,28 +94,80 @@ function renderResults(posts) {
   posts.forEach(function(post, index) {
     //RENDER INSTRUCTIONS: LINK
     if(post.type === "link"){
-      $("#results").append($(`<div id='post${index}' class='post hoverable link'><a href="${post.url}">${post.title}</a><br><div>${post.type}<br>${post.description}</div></div>`))
+      $("#results").append($(
+        `<div id='${post.type}${index}' class='post hoverable'>
+          <div class='col m10'>
+            <a href="${post.url}">${post.title}</a>
+            <div>
+              ${post.description}
+            </div>
+          </div>
+          ${favButton}
+        </div>`
+      ))
     }
     //RENDER INSTRUCTIONS: PHOTO
     if(post.type === "photo"){
-      $("#results").append($(`<div id='post${index}' class='post hoverable photo'><img src="${post.photos[0].original_size.url}"/><br><p>${post.type}<br>${post.summary}<p></div>`))
-    }
+      $("#results").append($(
+        `<div id='${post.type}${index}' class='post hoverable'>
+          <div class='col m10'>
+            <img src="${post.photos[0].original_size.url}"/>
+            <p>${post.summary}
+            </p>
+          </div>
+          ${favButton}
+        </div>`
+      ))
+    };
     //RENDER INSTRUCTIONS: TEXT
     if(post.type === "text"){
-      $("#results").append($(`<div id='post${index}' class='post hoverable text'><h3>${post.type}:${post.title}</h3><div>${post.body}</div></div>`))
-    }
+      $("#results").append($(
+        `<div id='${post.type}${index}' class='post hoverable'>
+          <div class='col m10'>
+            <h3>${post.title}</h3>
+            <div>${post.body}</div>
+          </div>
+          ${favButton}
+        </div>`
+      ))
+    };
     // RENDER INSTRUCTIONS: QUOTE
     if(post.type === "quote"){
-      $("#results").append($(`<div id='post${index}' class='post hoverable quote'><h3>${post.type}</h3><h1>${post.summary}</h1></div>`))
-    }
+      $("#results").append($(
+        `<div id='${post.type}${index}' class='post hoverable'>
+          <div class='col m10'>
+            <h1>${post.summary}</h1>
+            <h4>${post.source}</h4>
+          </div>
+          ${favButton}
+        </div>`
+      ))
+    };
+    // RENDER INSTRUCTIONS: AUDIO
+    if(post.type === "audio"){
+      $("#results").append($(
+        `<div id='${post.type}${index}' class='post hoverable'>
+          <div class='col m10 align audioPlayer'>
+              ${post.embed}
+          </div>
+          ${favButton}
+        </div>`
+      ))
+    };
+    // RENDER INSTRUCTIONS: VIDEO
+    if(post.type === "video"){
+      $("#results").append($(
+        `<div id='${post.type}${index}' class='post hoverable'>
+          <div class='col m10'>
+            <a target="_blank" href="${post.video_url}">
+              <img class="video" src="${post.thumbnail_url}"/>
+            </a>
+          </div>
+          ${favButton}
+        </div>`
+      ))
+    };
     // // TODO: RENDER INSTRUCTIONS: CHAT .map? (dialogue is array of objects)
-    // if(post.type === "chat"){
-    //   $("#results").append($(`<div id='post${index}' class='post hoverable quote'>
-    //     <h3>${post.type}</h3>
-    //     ${post.dialogue}.map()
-    //
-    //   </div>`))
-    // }
   })
 }
 
