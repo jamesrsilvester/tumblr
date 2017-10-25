@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <script src="http://code.jquery.com/jquery-2.2.2.min.js"></script>
     <script src="app.js"></script>
 
@@ -17,11 +16,14 @@
       <input type="text" id="tagInput" name="tagSearch" placeholder="Search By Tag" /><br />
       <input type="submit" value="Submit">
     </form>
-    <div id="results" class="center-align col m8">
+    <div class="center-align col m8">
       <h3>Results</h3>
+      <div id="results"></div>
     </div>
-    <div id="favoritesList" class="center-align col m4">
+    <div class="center-align col m4">
       <h3>Favorites</h3>
+      <div id="favorites">
+    </div>
     </div>
   </body>
 </html>

@@ -6,17 +6,30 @@ const apiKey = 'qvPkgVRPIjA1uvzj0neyThBYknIaH1R3lqsT2e5xBdfrkxDrvz';
 const favButton = `<div class="favBtn"><img src="./assets/star_empty.png"/></div>`;
 
 $(document).on("ready", function() {
-  console.log("scripts linked");
+  console.log("app.js linked");
 
   $("form").on("submit", function(e) {
     e.preventDefault();
     //clear previous results from page
-    $(".post").remove();
+    $("#results").empty();
     //check for completed fields.
     validateFormInput();
   });
 });
 
+function handleFav(){
+  $('#favorites .post').on("click", function(e) {
+      // $("#results").append(this)
+      console.log(this);
+  });
+};
+
+function handleClick(){
+  $('#results .post').on("click", function(e) {
+    $("#favorites").append(this)
+  });
+  handleFav();
+};
 function validateFormInput() {
   //save both search terms as variables
   var blogQuery = document.getElementById('blogInput').value.trim()
@@ -38,13 +51,13 @@ function validateFormInput() {
 
   //Condition 3 - Both blog and tag were searched
   if (blogQuery.length > 0 && tagQuery.length > 0){
-    console.log("Both have been submitted" + tagQuery)
+    console.log("Both tag and blog been submitted:" + tagQuery)
     requestBlogData(blogEndpoint, blogPath, tagQuery)
   }
 
   //Condition 4 - Only tag was searched
   if (blogQuery.length === 0 && tagQuery.length > 0){
-    console.log("Only tag submitted" + tagEndpoint + tagQuery)
+    console.log("Only tag submitted:" + tagQuery)
     requestTagData(tagEndpoint, tagQuery)
   }
 }
@@ -68,7 +81,8 @@ function requestTagData(endpoint, tag){
     url: baseUrl + endpoint,
     data: {
       api_key: apiKey,
-      tag:tag
+      tag:tag,
+      limit:20
     },
     success: onTagSuccess,
     error: onError
@@ -80,6 +94,7 @@ function onTagSuccess(json) {
   var tagPosts = json.response;
   console.log("success: " + tagPosts);
   renderResults(tagPosts)
+  handleClick();
 };
 
 //AJAX SUCCESS RESPONSE
@@ -88,6 +103,7 @@ function onBlogSuccess(json) {
   var blogPosts = json.response.posts;
   console.log("success: " + blogPosts);
   renderResults(blogPosts);
+  handleClick();
 };
 
 function renderResults(posts) {
@@ -97,8 +113,9 @@ function renderResults(posts) {
       $("#results").append($(
         `<div id='${post.type}${index}' class='post hoverable'>
           <div class='col m10'>
-            <a href="${post.url}">${post.title}</a>
+            <a target="_blank" href="${post.url}">${post.title}</a>
             <div>
+              <img src="${post.link_image}"/>
               ${post.description}
             </div>
           </div>
@@ -107,7 +124,7 @@ function renderResults(posts) {
       ))
     }
     //RENDER INSTRUCTIONS: PHOTO
-    if(post.type === "photo"){
+    if(post.type === "favorites"){
       $("#results").append($(
         `<div id='${post.type}${index}' class='post hoverable'>
           <div class='col m10'>
@@ -124,7 +141,6 @@ function renderResults(posts) {
       $("#results").append($(
         `<div id='${post.type}${index}' class='post hoverable'>
           <div class='col m10'>
-            <h3>${post.title}</h3>
             <div>${post.body}</div>
           </div>
           ${favButton}
@@ -147,8 +163,11 @@ function renderResults(posts) {
     if(post.type === "audio"){
       $("#results").append($(
         `<div id='${post.type}${index}' class='post hoverable'>
-          <div class='col m10 align audioPlayer'>
-              ${post.embed}
+          <div class='col m10 align'>
+              <h4>Check out this song:</h4>
+              <h5>${post.track_name}</h3>
+              <h5>${post.artist}</h3>
+              <p>${post.summary}</p>
           </div>
           ${favButton}
         </div>`
@@ -159,15 +178,14 @@ function renderResults(posts) {
       $("#results").append($(
         `<div id='${post.type}${index}' class='post hoverable'>
           <div class='col m10'>
-            <a target="_blank" href="${post.video_url}">
-              <img class="video" src="${post.thumbnail_url}"/>
-            </a>
+            <img class="video" src="${post.thumbnail_url}"/>
+            ${post.caption}
           </div>
           ${favButton}
         </div>`
       ))
     };
-    // // TODO: RENDER INSTRUCTIONS: CHAT .map? (dialogue is array of objects)
+    // TODO: RENDER INSTRUCTIONS: CHAT .map? (dialogue is array of objects)
   })
 }
 
