@@ -93,7 +93,7 @@ function renderResults(posts) {
   posts.forEach(function(post, index) {
     //RENDER INSTRUCTIONS: LINK
     if(post.type === "link"){
-      $("#results").append($(`<div id='post${index}' class='post hoverable link'><img src="${post.trail[0].blog.theme.header_image}"/><br><p>${post.type}<br>${post.trail[0].content}<p></div>`))
+      $("#results").append($(`<div id='post${index}' class='post hoverable link'><a href="${post.url}">${post.title}</a><br><div>${post.type}<br>${post.description}</div></div>`))
     }
     //RENDER INSTRUCTIONS: PHOTO
     if(post.type === "photo"){
