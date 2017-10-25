@@ -91,13 +91,30 @@ function onBlogSuccess(json) {
 
 function renderResults(posts) {
   posts.forEach(function(post, index) {
-    // TODO: Render Logic for different types of posts
+    //RENDER INSTRUCTIONS: LINK
     if(post.type === "link"){
-      $("#results").append($(`<div id='post${index}' class='post link'><img src="${post.trail[0].blog.theme.header_image}"/><br><p>${post.type}<br>${post.trail[0].content}<p></div>`))
+      $("#results").append($(`<div id='post${index}' class='post hoverable link'><img src="${post.trail[0].blog.theme.header_image}"/><br><p>${post.type}<br>${post.trail[0].content}<p></div>`))
     }
+    //RENDER INSTRUCTIONS: PHOTO
     if(post.type === "photo"){
-      $("#results").append($(`<div id='post${index}' class='post photo'><img src="${post.photos[0].original_size.url}"/><br><p>${post.type}<br>${post.summary}<p></div>`))
+      $("#results").append($(`<div id='post${index}' class='post hoverable photo'><img src="${post.photos[0].original_size.url}"/><br><p>${post.type}<br>${post.summary}<p></div>`))
     }
+    //RENDER INSTRUCTIONS: TEXT
+    if(post.type === "text"){
+      $("#results").append($(`<div id='post${index}' class='post hoverable text'><h3>${post.type}:${post.title}</h3><div>${post.body}</div></div>`))
+    }
+    // RENDER INSTRUCTIONS: QUOTE
+    if(post.type === "quote"){
+      $("#results").append($(`<div id='post${index}' class='post hoverable quote'><h3>${post.type}</h3><h1>${post.summary}</h1></div>`))
+    }
+    // // TODO: RENDER INSTRUCTIONS: CHAT .map? (dialogue is array of objects)
+    // if(post.type === "chat"){
+    //   $("#results").append($(`<div id='post${index}' class='post hoverable quote'>
+    //     <h3>${post.type}</h3>
+    //     ${post.dialogue}.map()
+    //
+    //   </div>`))
+    // }
   })
 }
 
