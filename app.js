@@ -56,7 +56,7 @@ function requestBlogData(endpoint, path, tag){
       api_key: apiKey,
       tag:tag
     },
-    success: onSuccess,
+    success: onBlogSuccess,
     error: onError
   })
 }
@@ -74,38 +74,32 @@ function requestTagData(endpoint, tag){
   })
 }
 
+function onTagSuccess(json) {
+  //save incoming JSON to var
+  var tagPosts = json.response;
+  console.log("success: " + tagPosts);
+  renderResults(tagPosts)
+};
 
 //AJAX SUCCESS RESPONSE
-function onSuccess(json) {
-  //save incoming JSON as variable
-  var allPosts = json.response.posts;
-  console.log("success: " + json.response.posts);
-  allPosts.forEach(function(post, index) {
+function onBlogSuccess(json) {
+  //save incoming JSON to var
+  var blogPosts = json.response.posts;
+  console.log("success: " + blogPosts);
+  renderResults(blogPosts);
+};
+
+function renderResults(posts) {
+  posts.forEach(function(post, index) {
     // TODO: Render Logic for different types of posts
     if(post.type === "link"){
       $("#results").append($(`<div id='post${index}' class='post link'><img src="${post.trail[0].blog.theme.header_image}"/><br><p>${post.type}<br>${post.trail[0].content}<p></div>`))
     }
     if(post.type === "photo"){
-      $("#results").append($(`<div id='post${index}' class='post photo'><img src="${post.photos[0].alt_sizes[4].url}"/><br><p>${post.type}<br>${post.summary}<p></div>`))
+      $("#results").append($(`<div id='post${index}' class='post photo'><img src="${post.photos[0].original_size.url}"/><br><p>${post.type}<br>${post.summary}<p></div>`))
     }
   })
-};
-// TODO: ELIMINATE DUPLICATION IN POST TYPE PARSING
-//AJAX Tag SUCCESS RESPONSE
-function onTagSuccess(json) {
-  //save incoming JSON as variable
-  var allPosts = json.response;
-  console.log("success: " + json.response.posts);
-  allPosts.forEach(function(post, index) {
-    // TODO: Render Logic for different types of posts
-    if(post.type === "link"){
-      $("#results").append($(`<div id='post${index}' class='post link'><img src="${post.trail[0].blog.theme.header_image}"/><br><p>${post.type}<br>${post.trail[0].content}<p></div>`))
-    }
-    if(post.type === "photo"){
-      $("#results").append($(`<div id='post${index}' class='post photo'><img src="${post.photos[0].alt_sizes[4].url}"/><br><p>${post.type}<br>${post.summary}<p></div>`))
-    }
-  })
-};
+}
 
 //AJAX ERROR RESPONSE
 function onError(request, status, error) {
