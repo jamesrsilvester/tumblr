@@ -32,13 +32,13 @@ function validateFormInput() {
     console.log("only blog has been submitted");
     //AJAX blog search
     console.log(`Searching for ${blogQuery}.tumblr.com`);
-    requestData(blogEndpoint, blogPath);
+    requestBlogData(blogEndpoint, blogPath, tagQuery);
   }
 
   //Condition 3 - Both blog and tag were searched
   if (blogQuery.length > 0 && tagQuery.length > 0){
     console.log("Both have been submitted" + tagQuery)
-    requestBlogData(blogEndpoint, tagQuery, blogPath)
+    requestBlogData(blogEndpoint, blogPath, tagQuery)
   }
 
   //Condition 4 - Only tag was searched
@@ -48,7 +48,7 @@ function validateFormInput() {
   }
 }
 
-function requestBlogData(endpoint, tag, blogPath){
+function requestBlogData(endpoint, path, tag){
   $.ajax({
     method: "GET",
     url: baseUrl + endpoint + path,
