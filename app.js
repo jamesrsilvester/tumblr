@@ -1,42 +1,43 @@
-
 const baseUrl = 'https://api.tumblr.com/v2';
+//Search by Blog endpoint
 const blogEndpoint = '/blog/';
+//Search by Tag endpoint
 const tagEndpoint = '/tagged';
+//store as env.variable?
 const apiKey = 'qvPkgVRPIjA1uvzj0neyThBYknIaH1R3lqsT2e5xBdfrkxDrvz';
-const favButton = `<div class="favBtn"><img src="./assets/star_empty.png"/></div>`;
 
 $(document).on("ready", function() {
-  console.log("app.js linked");
-
   $("form").on("submit", function(e) {
     e.preventDefault();
     //clear previous results from page
     $("#results").empty();
-    //check for completed fields.
+    //check for empty fields.
     validateFormInput();
   });
 });
 
-function handleFav(){
-  $('#favorites .post').on("click", function(e) {
-      // $("#results").append(this)
-      console.log(this);
-  });
+//attach listeners to buttons, and append posts between results and favorites
+function attachHandlers(){
+  $('.favBtn').on("click", function (e) {
+    if ($(this).text() === 'Favorite') {
+      $('#favorites').append($(this).closest('.post'));
+      $(this).text('Unfavorite');
+    }
+    else {
+      $('#results').append($(this).closest('.post'));
+      $(this).text('Favorite');
+    }
+  })
 };
 
-function handleClick(){
-  $('#results .post').on("click", function(e) {
-    $("#favorites").append(this)
-  });
-  handleFav();
-};
+//determine type of search input, then directs to AJAX request
 function validateFormInput() {
   //save both search terms as variables
   var blogQuery = document.getElementById('blogInput').value.trim()
   var tagQuery = document.getElementById('tagInput').value.trim();
   var blogPath = `${blogQuery}.tumblr.com/posts`;
 
-  // Condition 1 - Check whether both searches are empty.
+  // Condition 1 - Check whether both searches are empty
   if(blogQuery.length === 0 && tagQuery.length === 0){
     alert("Search must not be empty");
   }
@@ -62,19 +63,22 @@ function validateFormInput() {
   }
 }
 
+//AJAX call for blog endpoint only
 function requestBlogData(endpoint, path, tag){
   $.ajax({
     method: "GET",
     url: baseUrl + endpoint + path,
     data: {
       api_key: apiKey,
-      tag:tag
+      tag:tag,
+      limit: 20
     },
     success: onBlogSuccess,
     error: onError
   })
 }
 
+//AJAX call for tag endpoint only
 function requestTagData(endpoint, tag){
   $.ajax({
     method: "GET",
@@ -89,25 +93,26 @@ function requestTagData(endpoint, tag){
   })
 }
 
+//Fires on successful AJAX request for Tag-only search
 function onTagSuccess(json) {
-  //save incoming JSON to var
   var tagPosts = json.response;
   console.log("success: " + tagPosts);
   renderResults(tagPosts)
-  handleClick();
+  attachHandlers();
 };
 
-//AJAX SUCCESS RESPONSE
+//Fires on successful AJAX request for Blog and Blog + Tag search
 function onBlogSuccess(json) {
-  //save incoming JSON to var
   var blogPosts = json.response.posts;
   console.log("success: " + blogPosts);
   renderResults(blogPosts);
-  handleClick();
+  attachHandlers();
 };
 
+//Render instructions, by type of post
 function renderResults(posts) {
   posts.forEach(function(post, index) {
+    console.error('rendered');
     //RENDER INSTRUCTIONS: LINK
     if(post.type === "link"){
       $("#results").append($(
@@ -115,16 +120,15 @@ function renderResults(posts) {
           <div class='col m10'>
             <a target="_blank" href="${post.url}">${post.title}</a>
             <div>
-              <img src="${post.link_image}"/>
               ${post.description}
             </div>
           </div>
-          ${favButton}
+          <button class="favBtn">Favorite</button>
         </div>`
       ))
     }
     //RENDER INSTRUCTIONS: PHOTO
-    if(post.type === "favorites"){
+    else if(post.type === "photo"){
       $("#results").append($(
         `<div id='${post.type}${index}' class='post hoverable'>
           <div class='col m10'>
@@ -132,64 +136,64 @@ function renderResults(posts) {
             <p>${post.summary}
             </p>
           </div>
-          ${favButton}
+          <button class="favBtn">Favorite</button>
         </div>`
       ))
-    };
+    }
     //RENDER INSTRUCTIONS: TEXT
-    if(post.type === "text"){
+    else if(post.type === "text"){
       $("#results").append($(
         `<div id='${post.type}${index}' class='post hoverable'>
           <div class='col m10'>
             <div>${post.body}</div>
           </div>
-          ${favButton}
+          <button class="favBtn">Favorite</button>
         </div>`
       ))
-    };
+    }
     // RENDER INSTRUCTIONS: QUOTE
-    if(post.type === "quote"){
+    else if(post.type === "quote"){
       $("#results").append($(
         `<div id='${post.type}${index}' class='post hoverable'>
           <div class='col m10'>
             <h1>${post.summary}</h1>
             <h4>${post.source}</h4>
           </div>
-          ${favButton}
+          <button class="favBtn">Favorite</button>
         </div>`
       ))
-    };
+    }
     // RENDER INSTRUCTIONS: AUDIO
-    if(post.type === "audio"){
+    else if(post.type === "audio"){
       $("#results").append($(
         `<div id='${post.type}${index}' class='post hoverable'>
           <div class='col m10 align'>
-              <h4>Check out this song:</h4>
-              <h5>${post.track_name}</h3>
-              <h5>${post.artist}</h3>
-              <p>${post.summary}</p>
+              ${post.embed}
           </div>
-          ${favButton}
+          <button class="favBtn">Favorite</button>
         </div>`
       ))
-    };
+    }
     // RENDER INSTRUCTIONS: VIDEO
-    if(post.type === "video"){
+    else if(post.type === "video"){
       $("#results").append($(
         `<div id='${post.type}${index}' class='post hoverable'>
           <div class='col m10'>
             <img class="video" src="${post.thumbnail_url}"/>
             ${post.caption}
           </div>
-          ${favButton}
+          <button class="favBtn">Favorite</button>
         </div>`
       ))
-    };
-    // TODO: RENDER INSTRUCTIONS: CHAT .map? (dialogue is array of objects)
+    }
+    //catch for any unexpected post.types
+    else {
+      console.error('Found post type:' + post.type);
+    }
   })
 }
 
-//AJAX ERROR RESPONSE
+//AJAX error response
 function onError(request, status, error) {
   console.log("error " + request.responseText);
 };
