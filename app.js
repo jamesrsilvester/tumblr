@@ -52,13 +52,15 @@ function validateFormInput() {
 
   //Condition 3 - Both blog and tag were searched
   if (blogQuery.length > 0 && tagQuery.length > 0){
-    console.log("Both tag and blog been submitted:" + tagQuery)
+    console.log("Both tag and blog were submitted")
+    console.log(`Searching for ${tagQuery} tagged posts from ${blogQuery}.tumblr.com`);
     requestBlogData(blogEndpoint, blogPath, tagQuery)
   }
 
   //Condition 4 - Only tag was searched
   if (blogQuery.length === 0 && tagQuery.length > 0){
-    console.log("Only tag submitted:" + tagQuery)
+    console.log("Only tag submitted")
+    console.log(`Retrieving all posts with tag ${tagQuery}`)
     requestTagData(tagEndpoint, tagQuery)
   }
 }
