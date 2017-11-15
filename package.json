@@ -1,0 +1,6 @@
+{
+  "name": "tumbler",
+  "scripts": {
+    "serve": "python -m SimpleHTTPServer"
+  }
+}
